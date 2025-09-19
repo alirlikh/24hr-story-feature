@@ -4,15 +4,15 @@ import { memo, useCallback } from "react"
 interface StoryItemProps {
   story: IImageInfo
   index: number
-  onStoryClick: (index: number) => void
+  onStoryClick: (e: IImageInfo, index: number) => void
   getTimeAgo: (timestamp: number) => string
 }
 
 const StoryItem = memo(
   ({ story, index, onStoryClick, getTimeAgo }: StoryItemProps) => {
     const handleClick = useCallback(() => {
-      onStoryClick(index)
-    }, [index, onStoryClick])
+      return onStoryClick(story, index)
+    }, [index, onStoryClick, story])
 
     return (
       <div className="flex flex-col flex-shrink-0 items-center space-y-1">

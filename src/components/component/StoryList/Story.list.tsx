@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/hooks/redux"
 import { IImageInfo } from "@/hooks/useUploadImage"
 import React, { useState, useEffect, useRef, useCallback, memo } from "react"
 
@@ -93,19 +94,21 @@ const StoryList: React.FC<StoryViewerProps> = memo(
       null
     )
 
+    const allStoreis = useAppSelector((state) => state.storySlice.storeis)
+
     // Function to mark story as viewed
     const markStoryAsViewed = useCallback(
       (index: number) => {
-        const savedStories = localStorage.getItem("stories")
-        if (savedStories) {
-          const allStories = JSON.parse(savedStories)
-          const storyToUpdate = allStories.find(
+        // const savedStories = localStorage.getItem("stories")
+        if (allStoreis.length > 0) {
+          // const allStories = JSON.parse(savedStories)
+          const storyToUpdate = allStoreis.find(
             (s: IImageInfo) => s.id === stories[index].id
           )
-          if (storyToUpdate) {
-            storyToUpdate.viewed = true
-            localStorage.setItem("stories", JSON.stringify(allStories))
-          }
+          // if (storyToUpdate) {
+          //   storyToUpdate.viewed = true
+          //   // localStorage.setItem("stories", JSON.stringify(allStories))
+          // }
         }
       },
       [stories]
@@ -256,7 +259,6 @@ const StoryList: React.FC<StoryViewerProps> = memo(
             <NavigationButton direction="right" onClick={handleNext} />
           )}
         </div>
-        {console.log(stories)}
         {/* Story image */}
         <div className="absolute inset-0 flex items-center justify-center">
           <img

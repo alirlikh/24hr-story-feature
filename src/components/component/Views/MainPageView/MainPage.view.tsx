@@ -1,22 +1,27 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import UploadButton from "../../UploadButton/Upload.button"
-import {
-  getTimeAgo,
-  loadFromLocalStorage,
-  saveToLocalStorage,
-} from "@/utils/localStorageVerify"
+import { getTimeAgo } from "@/utils/localStorageVerify"
 import { IImageInfo, useUploadImage } from "@/hooks/useUploadImage"
-import StoryList from "../../StoryList/Story.list"
 import StoryItem from "../../StoryItem/Story.item"
+import { useAppDispatch, useAppSelector } from "@/hooks/redux"
+import { addStories, storyView } from "@/redux/features/story/story.slice"
+import ImageViewer from "../../ImageViewer/ImageViewer"
 
 const MainPageView = () => {
-  const [stories, setStories] = useState<IImageInfo[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const allStories = useAppSelector((state) => state.storySlice.storeis)
+
   const [selectedStoryIndex, setSelectedStoryIndex] = useState<number | null>(
     null
   )
 
+  const dispatch = useAppDispatch()
+
+  const handleInput = () => {
+    fileInputRef.current?.click()
+  }
+
   const { imageFileChange } = useUploadImage()
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = useCallback(
@@ -27,13 +32,7 @@ const MainPageView = () => {
       try {
         const newStory = await imageFileChange(file)
         if (newStory) {
-          setStories((prevStories) => {
-            const updatedStories = [...prevStories, newStory]
-            console.log(updatedStories)
-
-            saveToLocalStorage(updatedStories)
-            return updatedStories
-          })
+          dispatch(addStories(newStory))
         }
       } catch (error) {
         console.error("Error uploading image:", error)
@@ -44,87 +43,60 @@ const MainPageView = () => {
         fileInputRef.current.value = ""
       }
     },
-    [imageFileChange]
+    [dispatch, imageFileChange]
   )
-  const cleanupExpiredStories = useCallback(() => {
-    setStories((prevStories) => {
-      const filteredStories = prevStories.filter(
-        (story) => Date.now() - story.timestamp < 24 * 60 * 60 * 1000
-      )
-      if (filteredStories.length !== prevStories.length) {
-        saveToLocalStorage(filteredStories)
-      }
-      return filteredStories
-    })
-  }, [])
+  // const cleanupExpiredStories = useCallback(() => {
+  //   setStories((prevStories) => {
+  //     const filteredStories = prevStories.filter(
+  //       (story) => Date.now() - story.timestamp < 24 * 60 * 60 * 1000
+  //     )
+  //     if (filteredStories.length !== prevStories.length) {
+  //       saveToLocalStorage(filteredStories)
+  //     }
+  //     return filteredStories
+  //   })
+  // }, [])
 
-  useEffect(() => {
-    const loadStories = async () => {
-      setIsLoading(true)
-      try {
-        const loadedStories = await loadFromLocalStorage()
-        setStories(loadedStories)
-      } finally {
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 1000)
-      }
-    }
-
-    loadStories()
-    // const cleanup = setInterval(cleanupExpiredStories, 60000000)
-    // return () => clearInterval(cleanup)
-  }, [])
-
-  const handleStoryClick = useCallback((index: number) => {
-    setStories((prevStories) => {
-      const updatedStories = prevStories.map((story, i) => {
-        if (i === index && !story.viewed) {
-          return { ...story, viewed: true }
-        }
-        return story
-      })
-      saveToLocalStorage(updatedStories)
-      return updatedStories
-    })
-    setSelectedStoryIndex(index)
-  }, [])
-
-  console.log(stories)
+  const handleStoryClick = useCallback(
+    (story: IImageInfo, index: number) => {
+      dispatch(storyView(story))
+      setSelectedStoryIndex(index)
+    },
+    [dispatch]
+  )
 
   return (
-    <div className="grid grid-rows-[100px_1fr] h-screen gap-2 text-center">
-      <div className="text-left ml-10">
-        <div className="inline-flex flex-row mt-10">
-          <UploadButton />
+    <div className="grid grid-rows-[100px_1fr] h-screen gap-2 text-center bg-gray-700 overflow-hidden">
+      <div className="inline-flex pl-10 flex-row mt-10 justify-start gap-4 items-center h-[100px] overflow-hidden  ">
+        <UploadButton onClick={handleInput} />
+        <div className="flex flex-row gap-4  min-w-full pr-[100px] overflow-scroll [scrollbar-width:none] ">
+          {allStories.map((story, index) => (
+            <StoryItem
+              key={story.id}
+              story={story}
+              index={index}
+              onStoryClick={handleStoryClick}
+              getTimeAgo={getTimeAgo}
+            />
+          ))}
         </div>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileSelect}
-          accept="image/*"
-        />
+      </div>
 
-        {selectedStoryIndex !== null && (
-          <StoryList
-            stories={stories}
-            initialIndex={selectedStoryIndex}
-            onClose={() => setSelectedStoryIndex(null)}
-          />
-        )}
-      </div>
-      <div className="flex flex-row gap-4">
-        {" "}
-        {stories.map((story, index) => (
-          <StoryItem
-            key={story.id}
-            story={story}
-            index={index}
-            onStoryClick={handleStoryClick}
-            getTimeAgo={getTimeAgo}
-          />
-        ))}
-      </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept="image/*"
+        className="hidden"
+      />
+
+      {selectedStoryIndex !== null && (
+        <ImageViewer
+          storyList={allStories}
+          currentIndex={selectedStoryIndex}
+          onClose={() => setSelectedStoryIndex(null)}
+        />
+      )}
     </div>
   )
 }
