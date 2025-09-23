@@ -14,16 +14,10 @@ export const storySlice = createSlice({
       const newItem = action.payload
       state.storeis.push(newItem)
     },
-    storyView: (state, action: PayloadAction<IImageInfo>) => {
-      const story = action.payload
-      // const newStoryList = state.storeis.filter(
-      //   (myStory) => myStory.id != story.id
-      // )
-      // story = { ...story, viewed: true }
-      // newStoryList.push(story)
-      // state.storeis = newStoryList
+    storyView: (state, action: PayloadAction<number>) => {
+      const storyIndex = action.payload
 
-      const selectedStory = state.storeis.find((s) => s.id == story.id)
+      const selectedStory = state.storeis[storyIndex]
       if (selectedStory) {
         selectedStory.viewed = true
       }

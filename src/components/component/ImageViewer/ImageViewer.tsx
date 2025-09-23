@@ -2,6 +2,8 @@ import { IImageInfo } from "@/hooks/useUploadImage"
 import { FC, useCallback, useEffect, useRef, useState } from "react"
 import NavigationButton from "../NavigationButton/NavigationButton"
 import ProgressBar from "../ProgressBar/ProgressBar"
+import { useAppDispatch } from "@/hooks/redux"
+import { storyView } from "@/redux/features/story/story.slice"
 
 export interface ImageViewerProps {
   storyList: IImageInfo[]
@@ -25,18 +27,20 @@ const ImageViewer: FC<ImageViewerProps> = ({
   } | null>()
   const [isMounted, setIsMounted] = useState<boolean>(true)
 
+  const dispatch = useAppDispatch()
+
   const progressTimeout = useRef<number>(null)
 
   const storyMoveOn = useCallback(() => {
-    console.log("im running")
-
     if (progressTimeout.current) {
       window.clearTimeout(progressTimeout.current)
     }
 
     progressTimeout.current = window.setTimeout(() => {
       if (storyIndex < storyList.length - 1) {
-        setStoryIndex((prev) => prev + 1)
+        setStoryIndex((prev) => {
+          return prev + 1
+        })
       } else {
         onClose()
       }
@@ -66,17 +70,17 @@ const ImageViewer: FC<ImageViewerProps> = ({
     }
   }, [isMounted, onClose, storyIndex, storyList.length, storyMoveOn])
 
+  useEffect(() => {
+    dispatch(storyView(storyIndex))
+  }, [storyIndex, dispatch])
+
   const handleChangeStory = (type: "prev" | "next") => {
     if (type === "next") {
       setStoryIndex((prev) => {
-        if (prev < storyList.length - 1) return prev + 1
-        return prev
+        return prev < storyList.length - 1 ? prev + 1 : prev
       })
     } else if (type === "prev") {
-      setStoryIndex((prev) => {
-        if (prev > 0) return prev - 1
-        return prev
-      })
+      setStoryIndex((prev) => Math.max(prev - 1, 0))
     }
   }
 
@@ -98,7 +102,6 @@ const ImageViewer: FC<ImageViewerProps> = ({
     if (!startPosition || !endPosition) return
     const diffX = startPosition.x - endPosition?.x
     const diffY = startPosition.y - endPosition?.y
-    console.log(diffX)
 
     if (
       Math.abs(diffX) > Math.abs(diffY) &&

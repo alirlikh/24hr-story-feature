@@ -59,7 +59,7 @@ const MainPageView = () => {
 
   const handleStoryClick = useCallback(
     (story: IImageInfo, index: number) => {
-      dispatch(storyView(story))
+      dispatch(storyView(index))
       setSelectedStoryIndex(index)
     },
     [dispatch]
