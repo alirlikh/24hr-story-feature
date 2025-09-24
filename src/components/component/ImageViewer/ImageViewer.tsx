@@ -148,14 +148,14 @@ const ImageViewer: FC<ImageViewerProps> = ({
           <ProgressBar key={index} index={index} currentIndex={storyIndex} />
         ))}
       </div>
-      <div className="absolute inset-0 w-full">
+      <div className="absolute inset-0 w-full flex">
         <img
           src={storyList[storyIndex!].imageUrl}
           className="max-w-full max-h-full w-full object-contain"
           alt="story"
         />
       </div>
-      <div className="flex flex-row justify-between absolute  w-full top-1/2">
+      <div className="flex flex-row justify-between absolute w-full top-1/2">
         <NavigationButton
           className="ml-4"
           direction="left"

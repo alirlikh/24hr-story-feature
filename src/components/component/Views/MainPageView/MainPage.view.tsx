@@ -1,11 +1,13 @@
 import { useCallback, useRef, useState } from "react"
 import UploadButton from "../../UploadButton/Upload.button"
 import { getTimeAgo } from "@/utils/localStorageVerify"
-import { IImageInfo, useUploadImage } from "@/hooks/useUploadImage"
+import { useUploadImage } from "@/hooks/useUploadImage"
 import StoryItem from "../../StoryItem/Story.item"
 import { useAppDispatch, useAppSelector } from "@/hooks/redux"
 import { addStories, storyView } from "@/redux/features/story/story.slice"
 import ImageViewer from "../../ImageViewer/ImageViewer"
+
+import styles from "./MainPage.view.module.css"
 
 const MainPageView = () => {
   const allStories = useAppSelector((state) => state.storySlice.storeis)
@@ -15,6 +17,20 @@ const MainPageView = () => {
   )
 
   const dispatch = useAppDispatch()
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  const handleScroll = () => {
+    const el = containerRef.current
+    if (!el) return
+
+    // check if scrolled to the end
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1
+
+    if (atEnd) {
+      el.classList.add(styles.bounce)
+      setTimeout(() => el.classList.remove(styles.bounce), 600)
+    }
+  }
 
   const handleInput = () => {
     fileInputRef.current?.click()
@@ -58,7 +74,7 @@ const MainPageView = () => {
   // }, [])
 
   const handleStoryClick = useCallback(
-    (story: IImageInfo, index: number) => {
+    (index: number) => {
       dispatch(storyView(index))
       setSelectedStoryIndex(index)
     },
@@ -69,7 +85,11 @@ const MainPageView = () => {
     <div className="grid grid-rows-[100px_1fr] h-screen gap-2 text-center bg-gray-700 overflow-hidden">
       <div className="inline-flex pl-10 flex-row mt-10 justify-start gap-4 items-center h-[100px] overflow-hidden  ">
         <UploadButton onClick={handleInput} />
-        <div className="flex flex-row gap-4  min-w-full pr-[100px] overflow-scroll [scrollbar-width:none] ">
+        <div
+          ref={containerRef}
+          onScroll={handleScroll}
+          className="flex flex-row gap-4 min-w-full pr-[100px] overflow-scroll [scrollbar-width:none] "
+        >
           {allStories.map((story, index) => (
             <StoryItem
               key={story.id}
