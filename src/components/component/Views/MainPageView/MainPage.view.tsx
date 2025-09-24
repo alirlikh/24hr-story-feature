@@ -61,17 +61,6 @@ const MainPageView = () => {
     },
     [dispatch, imageFileChange]
   )
-  // const cleanupExpiredStories = useCallback(() => {
-  //   setStories((prevStories) => {
-  //     const filteredStories = prevStories.filter(
-  //       (story) => Date.now() - story.timestamp < 24 * 60 * 60 * 1000
-  //     )
-  //     if (filteredStories.length !== prevStories.length) {
-  //       saveToLocalStorage(filteredStories)
-  //     }
-  //     return filteredStories
-  //   })
-  // }, [])
 
   const handleStoryClick = useCallback(
     (index: number) => {
