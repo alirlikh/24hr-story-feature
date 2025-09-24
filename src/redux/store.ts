@@ -29,7 +29,7 @@ const storyExpireTransform = createTransform<IStorySlice, IStorySlice>(
       ),
     }
   },
-  { whitelist: ["storySlice"] }
+  { whitelist: [storySlice.name] }
 )
 
 const rootReducer = combineReducers({
