@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/alirlikh/24hr-story-feature/compare/v1.1.1...v1.1.2) (2025-10-28)
+
+
+### Bug Fixes
+
+* semantic-version rull for assest file ([e8247ab](https://github.com/alirlikh/24hr-story-feature/commit/e8247ab2c33c9b26615218668d5cbc62f4dd58b0))
+
 ## [1.1.1](https://github.com/alirlikh/24hr-story-feature/compare/v1.1.0...v1.1.1) (2025-10-28)
 
 
