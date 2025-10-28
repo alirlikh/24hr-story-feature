@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.1.0](https://github.com/alirlikh/24hr-story-feature/compare/v1.0.0...v1.1.0) (2025-10-28)
+
+
+### Features
+
+* add env file ([d4d71e1](https://github.com/alirlikh/24hr-story-feature/commit/d4d71e1dd7d502fca89b3b9d0a36b32eee92be81))
+
 # 1.0.0 (2025-10-28)
 
 
