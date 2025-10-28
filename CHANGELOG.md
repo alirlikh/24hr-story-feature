@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/alirlikh/24hr-story-feature/compare/v1.1.0...v1.1.1) (2025-10-28)
+
+
+### Bug Fixes
+
+* semnantic-release package write version ([0fb600b](https://github.com/alirlikh/24hr-story-feature/commit/0fb600be18e62d61db04774c051bbe7743cd6b2d))
+
 # Changelog
 
 # [1.1.0](https://github.com/alirlikh/24hr-story-feature/compare/v1.0.0...v1.1.0) (2025-10-28)
